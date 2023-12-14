@@ -13,6 +13,37 @@ saless = ["№", "Дата продажи", "Артикул", "Количест�
 stocks = ["№", "Артикул", "Дата поступления", "Номер документа", "Поставщик", "Количество", "Общее количество"]
 
 
+class AboutProgramWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("О программе")
+
+        # Информация о программе
+        program_name_label = tk.Label(self, text="Название программы: Салон сотовой связи")
+        program_version_label = tk.Label(self, text="Версия: 1.0")
+        developer_label = tk.Label(self, text="Разработчик: Зайцев Евгений, 2023")
+
+        # Рамка для назначения программного средства
+        purpose_frame = tk.LabelFrame(self, text="")  # Удалил текст "Назначение программного средства"
+        purpose_text = (
+            "Данное программное средство «Салон сотовой связи» "
+            "разрабатывается с целью автоматизации процесса введения отчетности"
+        )
+        purpose_label = tk.Label(purpose_frame, text=purpose_text, anchor="w", wraplength=300)
+
+        # Размещение компонентов
+        program_name_label.pack(pady=5)
+        program_version_label.pack(pady=5)
+        developer_label.pack(pady=5)
+
+        purpose_frame.pack(pady=10, padx=10, ipadx=5, ipady=5)  # Добавлены ipadx и ipady
+        purpose_label.pack(pady=5)
+
+        # Кнопка "ОК" для закрытия окна
+        ok_button = tk.Button(self, text="ОК", command=self.destroy)
+        ok_button.pack(pady=10)
+
+
 class WindowMain(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -59,8 +90,8 @@ class WindowMain(ctk.CTk):
 
         # Меню "Сервис"
         help_menu = tk.Menu(self.menu_bar, tearoff=0)
-        help_menu.add_command(label="Руководство пользователя")
-        help_menu.add_command(label="O программе")
+        help_menu.add_command(label="Руководство пользователя", command=self.open_rykov)
+        help_menu.add_command(label="O программе" , command=self.open_about_window)
         self.menu_bar.add_cascade(label="Сервис", menu=help_menu)
 
         # Настройка цветов меню
@@ -106,6 +137,10 @@ class WindowMain(ctk.CTk):
                     table.see(item)
                     return item  # Возвращаем найденный элемент
 
+    def open_rykov(self):
+        os.system(r"E:\ABTRPO\trpo\5-6\main.html")
+
+
     def reset_search(self):
         if self.last_headers:
             self.table.selection_remove(self.table.selection())
@@ -121,6 +156,14 @@ class WindowMain(ctk.CTk):
                 self.current_item = self.search_in_table(self.table, self.search_entry.get().split(','),
                                                          start_item=self.current_item)
 
+
+    def open_about_window(self):
+        about_window = AboutProgramWindow(self)
+        about_window.geometry("600x250")  # Установите размер окна по вашему усмотрению
+        about_window.focus_set()
+        about_window.grab_set()
+        self.wait_window(about_window)
+        
     def to_xlsx(self):
         if self.last_headers == accessoriess:
             sql_query = "SELECT * FROM accessories"
@@ -1031,6 +1074,7 @@ class WindowStocks(ctk.CTkToplevel):
             self.quit_win()
         except sqlite3.Error as e:
             showerror(title="Ошибка", message=str(e))
+
 
 if __name__ == "__main__":
     win = WindowMain()
